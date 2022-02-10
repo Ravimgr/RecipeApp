@@ -1,6 +1,7 @@
-import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:recipeapp/constants/constants.dart';
 import 'package:recipeapp/widget/widgets.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -13,14 +14,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<Map<String, dynamic>> _items = List.generate(
-      30,
-      (index) => {
-            "id": index,
-            "title": "Item $index",
-            "height": Random().nextInt(150) + 50.5
-          });
-
   @override
   Widget build(BuildContext context) {
     const EdgeInsets _padding = EdgeInsets.symmetric(horizontal: 20.0);
@@ -34,31 +27,30 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: const _TopBody(padding: _padding)),
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.5,
-              child: MasonryGridView.count(
-                  itemCount: _items.length,
-                  crossAxisCount: 2,
-                  itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: () => Navigator.of(context).pushNamed('/detail'),
-                      child: Card(
-                        // Give each item a random background color
-                        color: Color.fromARGB(
-                            Random().nextInt(256),
-                            Random().nextInt(256),
-                            Random().nextInt(256),
-                            Random().nextInt(256)),
-                        key: ValueKey(_items[index]['id']),
-                        child: SizedBox(
-                          height: _items[index]['height'],
-                          child: Center(
-                            child: Image.asset(
-                              'assets/images/img.png',
-                              fit: BoxFit.fill,
+              child: StreamBuilder<QuerySnapshot>(
+                  stream: foods.snapshots(),
+                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    return MasonryGridView.count(
+                        itemCount: snapshot.data!.docs.length,
+                        crossAxisCount: 2,
+                        itemBuilder: (context, index) {
+                          final DocumentSnapshot foods =
+                              snapshot.data!.docs[index];
+                          return InkWell(
+                            onTap: () => Navigator.of(context)
+                                .pushNamed('/detail', arguments: foods.id),
+                            child: RecipeCard(
+                              imgUrl: foods['imgUrl'],
+                              title: foods['title'],
+                              time: foods['duration'],
                             ),
-                          ),
-                        ),
-                      ),
-                    );
+                          );
+                        });
                   }),
             ),
           ],

@@ -6,7 +6,7 @@ class TextWithIcon extends StatelessWidget {
       : super(key: key);
 
   final String text;
-  final double? value;
+  final String? value;
   final IconData icon;
 
   @override
@@ -17,12 +17,10 @@ class TextWithIcon extends StatelessWidget {
         height: 150,
         width: 85,
         decoration: const BoxDecoration(
-          color: Colors.pinkAccent,
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(40),
-              bottomLeft: Radius.circular(40),
-              bottomRight: Radius.circular(40),
-              topRight: Radius.circular(40)),
+          color: Color.fromRGBO(46, 58, 89, 1),
+          borderRadius: BorderRadius.all(
+            Radius.circular(40),
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -30,7 +28,7 @@ class TextWithIcon extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 5.0),
               child: CircleAvatar(
-                radius: 40,
+                radius: 35,
                 backgroundColor: Colors.white,
                 child: ClipOval(
                     child: Icon(
@@ -42,15 +40,16 @@ class TextWithIcon extends StatelessWidget {
             ),
             const SizedBox(height: 5),
             Text(
-              value.toString(),
+              value == null ? '' : value.toString(),
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
             Text(
               text,
-              style: const TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16, color: Colors.white),
             ),
           ],
         ),
